@@ -6,9 +6,12 @@ import {
   Text,
   VStack,
 } from "@gluestack-ui/themed";
+import { useNavigation } from "@react-navigation/native";
 
 import Logo from "@assets/logo.svg";
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
+
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
 import { UserPhoto } from "@components/UserPhoto";
 import { ButtonEdit } from "@components/ButtonEdit";
@@ -16,6 +19,12 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
 export function SignUp() {
+  const navigator = useNavigation<AuthNavigatorRoutesProps>();
+
+  function handleSignIn() {
+    navigator.goBack();
+  }
+
   return (
     <ScrollView
       w={"$full"}
@@ -63,7 +72,12 @@ export function SignUp() {
           Já tem uma conta?
         </Text>
 
-        <Button title="Ir para o login" variant="outline" mb={"$8"} />
+        <Button
+          title="Ir para o login"
+          variant="outline"
+          mb={"$8"}
+          onPress={handleSignIn}
+        />
       </VStack>
     </ScrollView>
   );

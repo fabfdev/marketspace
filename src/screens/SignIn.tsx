@@ -5,13 +5,22 @@ import {
   Text,
   VStack,
 } from "@gluestack-ui/themed";
+import { useNavigation } from "@react-navigation/native";
 
 import Logo from "@assets/logo.svg";
+
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
 export function SignIn() {
+  const navigator = useNavigation<AuthNavigatorRoutesProps>();
+
+  function handleSignUp() {
+    navigator.navigate("signUp");
+  }
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -50,7 +59,11 @@ export function SignIn() {
         <Center gap={"$4"} bg="$gray7" px={"$16"} h={"$56"}>
           <Text>Ainda não tem acesso?</Text>
 
-          <Button title="Criar uma conta" variant="outline" />
+          <Button
+            title="Criar uma conta"
+            variant="outline"
+            onPress={handleSignUp}
+          />
         </Center>
       </VStack>
     </ScrollView>
