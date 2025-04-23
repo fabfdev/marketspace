@@ -3,9 +3,11 @@ import { Input, InputField, InputIcon, InputSlot } from "@gluestack-ui/themed";
 
 import { MagnifyingGlass, LineVertical, Sliders } from "phosphor-react-native";
 
-type Props = ComponentProps<typeof Input>;
+type Props = ComponentProps<typeof Input> & {
+  handleFilter: () => void;
+};
 
-export function InputSearch({ ...rest }: Props) {
+export function InputSearch({ handleFilter, ...rest }: Props) {
   return (
     <Input
       h={"$12"}
@@ -26,7 +28,7 @@ export function InputSearch({ ...rest }: Props) {
       <InputSlot px="$2">
         <InputIcon as={LineVertical} />
       </InputSlot>
-      <InputSlot pr="$3">
+      <InputSlot pr="$3" onPress={handleFilter}>
         <InputIcon as={Sliders} color="$gray2" size="lg" />
       </InputSlot>
     </Input>

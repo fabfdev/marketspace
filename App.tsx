@@ -4,7 +4,8 @@ import {
   Karla_700Bold,
   useFonts,
 } from "@expo-google-fonts/karla";
-import { Center, GluestackUIProvider, Text } from "@gluestack-ui/themed";
+import { GluestackUIProvider } from "@gluestack-ui/themed";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { config } from "./config/gluestack-ui.config";
 
 import { Routes } from "@routes/index";
@@ -14,9 +15,11 @@ export default function App() {
   const [fontsLoaded] = useFonts({ Karla_400Regular, Karla_700Bold });
 
   return (
-    <GluestackUIProvider config={config}>
-      {fontsLoaded ? <Routes /> : <Loading />}
-      <StatusBar style="dark" />
-    </GluestackUIProvider>
+    <GestureHandlerRootView>
+      <GluestackUIProvider config={config}>
+        {fontsLoaded ? <Routes /> : <Loading />}
+        <StatusBar style="dark" />
+      </GluestackUIProvider>
+    </GestureHandlerRootView>
   );
 }

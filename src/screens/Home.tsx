@@ -1,8 +1,5 @@
 import { FlatList } from "react-native";
-import { Heading, HStack, Text, VStack, Pressable } from "@gluestack-ui/themed";
-import { gluestackUIConfig } from "../../config/gluestack-ui.config";
-
-import { Tag, ArrowRight, TextT } from "phosphor-react-native";
+import { Heading, HStack, Text, VStack } from "@gluestack-ui/themed";
 
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
 
@@ -10,10 +7,9 @@ import { UserPhoto } from "@components/UserPhoto";
 import { Button } from "@components/Button";
 import { InputSearch } from "@components/InputSearch";
 import { AdItem } from "@components/AdItem";
+import { MyAdsButton } from "@components/MyAdsButton";
 
-export function Home() {
-  const { tokens } = gluestackUIConfig;
-
+export function Home({ openSheet }: { openSheet: () => void }) {
   const data = Array.from({ length: 10 }).map((_, i) => ({
     id: i.toString(),
     title: `Item ${i + 1}`,
@@ -39,31 +35,11 @@ export function Home() {
 
       <Text mt={"$10"}>Seus produtos anunciados para venda</Text>
 
-      <Pressable
-        onPress={() => console.log("asd")}
-        bgColor="$blueLightAlpha"
-        p="$4"
-        rounded={"$lg"}
-        $active-bg="$blueLightAlpha2"
-        mt={"$4"}
-      >
-        <HStack alignItems="center">
-          <Tag color={tokens.colors.blue} />
-          <VStack ml={"$4"} flex={1}>
-            <Heading>4</Heading>
-            <Text>anúncios ativos</Text>
-          </VStack>
-
-          <Text color="$blue" mr={"$4"} fontFamily="$heading">
-            Meus anúncios
-          </Text>
-          <ArrowRight color={tokens.colors.blue} />
-        </HStack>
-      </Pressable>
+      <MyAdsButton />
 
       <Text mt={"$10"}>Compre produtos variados</Text>
 
-      <InputSearch mt={"$4"} />
+      <InputSearch mt={"$4"} handleFilter={openSheet} />
 
       <FlatList
         data={data}
