@@ -1,10 +1,26 @@
-import { Box, Heading, HStack, Text } from "@gluestack-ui/themed";
-import { Image, VStack } from "@gluestack-ui/themed";
+import {
+  Image,
+  Box,
+  Heading,
+  HStack,
+  Pressable,
+  Text,
+} from "@gluestack-ui/themed";
+import { useNavigation } from "@react-navigation/native";
+
 import { UserPhoto } from "./UserPhoto";
 
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
+
 export function AdItem() {
+  const navigator = useNavigation<AppNavigatorRoutesProps>();
+
+  function handleOpenDetails() {
+
+  }
+
   return (
-    <VStack flex={1} mb={"$8"}>
+    <Pressable flex={1} mb={"$8"} onPress={handleOpenDetails}>
       <Box position="relative">
         <Image
           source={{
@@ -30,7 +46,7 @@ export function AdItem() {
           isUserAd
         />
 
-          {/* $blue */}
+        {/* $blue */}
         <Text
           position="absolute"
           alignSelf="flex-end"
@@ -53,6 +69,6 @@ export function AdItem() {
         <Text fontFamily="$heading">R$</Text>
         <Heading ml={"$1"}>120,00</Heading>
       </HStack>
-    </VStack>
+    </Pressable>
   );
 }

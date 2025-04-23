@@ -1,10 +1,13 @@
 import { useRef } from "react";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import {
   createBottomTabNavigator,
   BottomTabNavigationProp,
 } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import { House, Tag, SignOut } from "phosphor-react-native";
+
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
@@ -12,6 +15,8 @@ import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { Home } from "@screens/Home";
 import { MyAds } from "@screens/MyAds";
 import { Logout } from "@screens/Logout";
+import { AdDetails } from "@screens/AdDetails";
+
 import { SheetFilter } from "@components/SheetFilter";
 
 type AppRoutes = {
@@ -76,7 +81,18 @@ export function AppRoutes() {
           listeners={{
             tabPress: (e) => {
               e.preventDefault();
-              console.log("logout app");
+              Alert.alert("Sair", "Deseja sair?", [
+                {
+                  text: "Sim",
+                  onPress: () => console.log("Sair"),
+                  style: "destructive",
+                },
+                {
+                  text: "Cancelar",
+                  onPress: () => console.log("não"),
+                  style: "cancel",
+                },
+              ]);
             },
           }}
           options={{
