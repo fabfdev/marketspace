@@ -21,13 +21,17 @@ import { SheetFilter } from "@components/SheetFilter";
 
 type AppRoutes = {
   home: undefined;
+  ads: undefined;
   myAds: undefined;
   logout: undefined;
+  adDetails: undefined;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
 
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
+const { Navigator: StackNavigator, Screen: StackScreen } =
+  createNativeStackNavigator<AppRoutes>();
 
 export function AppRoutes() {
   const { tokens } = gluestackUIConfig;
@@ -37,8 +41,8 @@ export function AppRoutes() {
     sheetFilterRef?.current?.snapToIndex(0);
   }
 
-  return (
-    <>
+  function TabNavigator() {
+    return (
       <Navigator
         screenOptions={{
           headerShown: false,
@@ -55,7 +59,7 @@ export function AppRoutes() {
         }}
       >
         <Screen
-          name="home"
+          name="ads"
           options={{
             tabBarIcon: ({ color }) => (
               <House color={color} size={tokens.space[6]} />
@@ -102,7 +106,15 @@ export function AppRoutes() {
           }}
         />
       </Navigator>
+    );
+  }
 
+  return (
+    <>
+      <StackNavigator screenOptions={{ headerShown: false }}>
+        <StackScreen name="home" component={TabNavigator} />
+        <StackScreen name="adDetails" component={AdDetails} />
+      </StackNavigator>
       <SheetFilter bottomSheetRef={sheetFilterRef} />
     </>
   );

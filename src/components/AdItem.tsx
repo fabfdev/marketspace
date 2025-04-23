@@ -16,7 +16,7 @@ export function AdItem() {
   const navigator = useNavigation<AppNavigatorRoutesProps>();
 
   function handleOpenDetails() {
-
+    navigator.navigate("adDetails");
   }
 
   return (
