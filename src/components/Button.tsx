@@ -8,6 +8,7 @@ type Props = ComponentProps<typeof GluestackButton> & {
   variant?: ButtonVariantProps;
   isLoading?: boolean;
   isAuto?: boolean;
+  isFlex?: boolean;
 };
 
 export function Button({
@@ -15,11 +16,12 @@ export function Button({
   variant = "solid",
   isLoading = false,
   isAuto = false,
+  isFlex = false,
   ...rest
 }: Props) {
   return (
     <GluestackButton
-      w={isAuto ? "auto" : "$full"}
+      sx={isFlex ? { flex: 1 } : { width: isAuto ? "auto" : "$full" }}
       h={"$12"}
       bg={
         variant === "solid"
@@ -32,6 +34,7 @@ export function Button({
         variant === "solid" ? "$blue" : variant === "link" ? "$gray2" : "$gray4"
       }
       {...rest}
+      rounded={"$lg"}
     >
       <Text
         color={
