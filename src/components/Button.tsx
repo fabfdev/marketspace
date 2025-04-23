@@ -7,17 +7,19 @@ type Props = ComponentProps<typeof GluestackButton> & {
   title: string;
   variant?: ButtonVariantProps;
   isLoading?: boolean;
+  isAuto?: boolean;
 };
 
 export function Button({
   title,
   variant = "solid",
-  isLoading,
+  isLoading = false,
+  isAuto = false,
   ...rest
 }: Props) {
   return (
     <GluestackButton
-      w={"$full"}
+      w={isAuto ? "auto" : "$full"}
       h={"$12"}
       bg={
         variant === "solid"
