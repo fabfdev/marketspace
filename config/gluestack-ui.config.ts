@@ -168,6 +168,8 @@ export const gluestackUIConfig = createConfig({
       gray5: '#D9D8DA',
       gray6: '#EDECEE',
       gray7: '#F7F7F8',
+      gray7opacity50: '#F7F7F880',
+      gray7opacity75: '#F7F7F8BF',
       lime50: '#f7fee7',
       lime100: '#ecfccb',
       lime200: '#d9f99d',
