@@ -4,7 +4,7 @@
     "strict": true,
     "paths": {
       "@dtos/*": ["./src/dtos/*"],
-      "@assets/*": ["./assets/*"],
+      "@assets/*": ["./src/assets/*"],
       "@components/*": ["./src/components/*"],
       "@screens/*": ["./src/screens/*"],
       "@storage/*": ["./src/storage/*"],

@@ -92,7 +92,7 @@ export function AppRoutes() {
                   style: "destructive",
                 },
                 {
-                  text: "Cancelar",
+                  text: "Não",
                   onPress: () => console.log("não"),
                   style: "cancel",
                 },

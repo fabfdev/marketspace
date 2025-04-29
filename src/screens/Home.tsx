@@ -1,5 +1,6 @@
 import { FlatList } from "react-native";
 import { Heading, HStack, Text, VStack } from "@gluestack-ui/themed";
+import { useNavigation } from "@react-navigation/native";
 
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
 
@@ -9,11 +10,19 @@ import { InputSearch } from "@components/InputSearch";
 import { AdItem } from "@components/AdItem";
 import { MyAdsButton } from "@components/MyAdsButton";
 
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
+
 export function Home({ openSheet }: { openSheet: () => void }) {
+  const navigator = useNavigation<AppNavigatorRoutesProps>();
+
   const data = Array.from({ length: 10 }).map((_, i) => ({
     id: i.toString(),
     title: `Item ${i + 1}`,
   }));
+
+  function handleOpenDetails() {
+    navigator.navigate("adDetails");
+  }
 
   return (
     <VStack flex={1} pt={"$16"} px={"$8"} bgColor="$gray6">
@@ -45,7 +54,7 @@ export function Home({ openSheet }: { openSheet: () => void }) {
         data={data}
         keyExtractor={(item) => item.id}
         numColumns={2}
-        renderItem={({ item }) => <AdItem />}
+        renderItem={({ item }) => <AdItem onClick={handleOpenDetails} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingVertical: 24 }}
         columnWrapperStyle={{ gap: 20 }}

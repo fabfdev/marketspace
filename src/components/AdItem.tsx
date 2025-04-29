@@ -6,21 +6,18 @@ import {
   Pressable,
   Text,
 } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
 
 import { UserPhoto } from "./UserPhoto";
 
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
+type Props = {
+  onClick?: () => void;
+  isMine?: boolean;
+  isDisabled?: boolean;
+};
 
-export function AdItem() {
-  const navigator = useNavigation<AppNavigatorRoutesProps>();
-
-  function handleOpenDetails() {
-    navigator.navigate("adDetails");
-  }
-
+export function AdItem({ onClick, isMine = false, isDisabled = false }: Props) {
   return (
-    <Pressable flex={1} mb={"$8"} onPress={handleOpenDetails}>
+    <Pressable flex={1} mb={"$8"} onPress={onClick}>
       <Box position="relative">
         <Image
           source={{
@@ -33,18 +30,20 @@ export function AdItem() {
           rounded={"$md"}
         />
 
-        <UserPhoto
-          source={{
-            uri: "https://pbs.twimg.com/media/GDLS7FPXQAA6gR_.jpg",
-          }}
-          position="absolute"
-          alt="Foto user"
-          w={"$8"}
-          h={"$8"}
-          top={5}
-          left={5}
-          isUserAd
-        />
+        {!isMine && (
+          <UserPhoto
+            source={{
+              uri: "https://pbs.twimg.com/media/GDLS7FPXQAA6gR_.jpg",
+            }}
+            position="absolute"
+            alt="Foto user"
+            w={"$8"}
+            h={"$8"}
+            top={5}
+            left={5}
+            isUserAd
+          />
+        )}
 
         {/* $blue */}
         <Text
@@ -62,12 +61,33 @@ export function AdItem() {
         >
           USADO
         </Text>
+
+        {isDisabled && (
+          <Box
+            position="absolute"
+            bgColor="$black50alpha"
+            w={"$full"}
+            h={"$24"}
+            rounded={"$md"}
+            justifyContent="flex-end"
+          >
+            <Text
+              color={"$gray7"}
+              fontSize={"$sm"}
+              fontFamily="$heading"
+              mx={"$1"}
+              mb={"$2"}
+            >
+              ANÚNCIO DESATIVADO
+            </Text>
+          </Box>
+        )}
       </Box>
 
-      <Text mt={"$2"}>Tênis Nike</Text>
+      <Text mt={"$2"} color={!isDisabled ? "$gray2" : "$gray4"}>Tênis Nike</Text>
       <HStack alignItems="baseline">
-        <Text fontFamily="$heading">R$</Text>
-        <Heading ml={"$1"}>120,00</Heading>
+        <Text fontFamily="$heading" color={!isDisabled ? "$gray2" : "$gray4"}>R$</Text>
+        <Heading ml={"$1"} color={!isDisabled ? "$gray2" : "$gray4"}>120,00</Heading>
       </HStack>
     </Pressable>
   );
