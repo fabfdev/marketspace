@@ -24,7 +24,9 @@ type AppRoutes = {
   ads: undefined;
   myAds: undefined;
   logout: undefined;
-  adDetails: undefined;
+  adDetails: {
+    isEdit: boolean;
+  };
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;

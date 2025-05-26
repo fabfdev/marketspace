@@ -2,18 +2,21 @@ import { Heading, HStack, Pressable, Text, VStack } from "@gluestack-ui/themed";
 import { Tag, ArrowRight } from "phosphor-react-native";
 
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
+import { ComponentProps } from "react";
 
-export function MyAdsButton() {
+type Props = ComponentProps<typeof Pressable>;
+
+export function MyAdsButton({ ...rest }: Props) {
   const { tokens } = gluestackUIConfig;
 
   return (
     <Pressable
-      onPress={() => console.log("asd")}
       bgColor="$blueLightAlpha"
       p="$4"
       rounded={"$lg"}
       $active-bg="$blueLightAlpha2"
       mt={"$4"}
+      {...rest}
     >
       <HStack alignItems="center">
         <Tag color={tokens.colors.blue} />

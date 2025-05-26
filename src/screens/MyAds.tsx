@@ -20,14 +20,21 @@ import {
 import { CaretDown } from "phosphor-react-native";
 
 import { AdItem } from "@components/AdItem";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 const width = Dimensions.get("window").width;
 
 export function MyAds() {
+  const navigator = useNavigation<AppNavigatorRoutesProps>();
   const data = Array.from({ length: 10 }).map((_, i) => ({
     id: i.toString(),
     title: `Item ${i + 1}`,
   }));
+
+  function handleOpenDetails() {
+    navigator.navigate("adDetails", { isEdit: true });
+  }
 
   return (
     <VStack bgColor="$gray6" flex={1} pt={"$16"}>
@@ -77,7 +84,7 @@ export function MyAds() {
           data={data}
           keyExtractor={(item) => item.id}
           numColumns={2}
-          renderItem={({ item }) => <AdItem isMine isDisabled />}
+          renderItem={({ item }) => <AdItem isMine isDisabled onClick={handleOpenDetails} />}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 24 }}
           columnWrapperStyle={{ gap: 20 }}

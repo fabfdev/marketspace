@@ -21,7 +21,11 @@ export function Home({ openSheet }: { openSheet: () => void }) {
   }));
 
   function handleOpenDetails() {
-    navigator.navigate("adDetails");
+    navigator.navigate("adDetails", { isEdit: false });
+  }
+
+  function handleOpenMyAds() {
+    navigator.navigate("myAds");
   }
 
   return (
@@ -44,7 +48,7 @@ export function Home({ openSheet }: { openSheet: () => void }) {
 
       <Text mt={"$10"}>Seus produtos anunciados para venda</Text>
 
-      <MyAdsButton />
+      <MyAdsButton onPress={handleOpenMyAds} />
 
       <Text mt={"$10"}>Compre produtos variados</Text>
 

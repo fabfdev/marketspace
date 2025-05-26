@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Dimensions, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   Heading,
   HStack,
@@ -20,7 +20,7 @@ import Carousel, {
 
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
-import { ArrowLeft } from "phosphor-react-native";
+import { ArrowLeft, PencilSimpleLine } from "phosphor-react-native";
 
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
 
@@ -31,10 +31,17 @@ const width = Dimensions.get("window").width;
 
 const defaultDataWith6Colors = ["#B0604D", "#899F9C", "#B3C680"];
 
+type RouteParamsProps = {
+  isEdit: boolean;
+};
+
 export function AdDetails() {
   const { tokens } = gluestackUIConfig;
+  const route = useRoute();
   const ref = useRef<ICarouselInstance>(null);
   const navigator = useNavigation<AppNavigatorRoutesProps>();
+
+  const { isEdit } = route.params as RouteParamsProps;
 
   const progress = useSharedValue<number>(0);
 
@@ -55,9 +62,17 @@ export function AdDetails() {
 
   return (
     <VStack bgColor="$gray6" flex={1} pt={"$16"}>
-      <Pressable onPress={handleBack} mx={"$8"} pb={"$6"}>
-        <ArrowLeft />
-      </Pressable>
+      <HStack mx={"$8"} pb={"$6"} justifyContent="space-between">
+        <Pressable onPress={handleBack}>
+          <ArrowLeft />
+        </Pressable>
+
+        {isEdit && (
+          <Pressable>
+            <PencilSimpleLine />
+          </Pressable>
+        )}
+      </HStack>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <View style={{ position: "relative" }}>
@@ -168,21 +183,30 @@ export function AdDetails() {
         </VStack>
       </ScrollView>
 
-      <HStack
-        px={"$8"}
-        pb={"$10"}
-        pt={"$3.5"}
-        bgColor="$gray7"
-        alignItems="baseline"
-      >
-        <Heading fontSize={"$sm"} color="$blueLight">
-          R$
-        </Heading>
-        <Heading flex={1} fontSize={"$xxl"} color="$blueLight">
-          120,00
-        </Heading>
-        <Button title="Entrar em contato" isFlex />
-      </HStack>
+      {isEdit && (
+        <VStack px={"$8"} pb={"$10"} pt={"$3.5"} gap={"$2"}>
+          <Button title="Desativar anúncio" variant="link" />
+          <Button title="Excluir anúncio" variant="outline" />
+        </VStack>
+      )}
+
+      {!isEdit && (
+        <HStack
+          px={"$8"}
+          pb={"$10"}
+          pt={"$3.5"}
+          bgColor="$gray7"
+          alignItems="baseline"
+        >
+          <Heading fontSize={"$sm"} color="$blueLight">
+            R$
+          </Heading>
+          <Heading flex={1} fontSize={"$xxl"} color="$blueLight">
+            120,00
+          </Heading>
+          <Button title="Entrar em contato" isFlex />
+        </HStack>
+      )}
     </VStack>
   );
 }
