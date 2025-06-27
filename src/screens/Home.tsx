@@ -28,6 +28,10 @@ export function Home({ openSheet }: { openSheet: () => void }) {
     navigator.navigate("myAds");
   }
 
+  function handleOpenCreationAd() {
+    navigator.navigate("creationEditionAd");
+  }
+
   return (
     <VStack flex={1} pt={"$16"} px={"$8"} bgColor="$gray6">
       <HStack>
@@ -43,7 +47,12 @@ export function Home({ openSheet }: { openSheet: () => void }) {
           <Heading fontSize={"$md"}>Felipe</Heading>
         </VStack>
 
-        <Button title="Criar anúncio" variant="link" isAuto />
+        <Button
+          title="Criar anúncio"
+          variant="link"
+          isAuto
+          onPress={handleOpenCreationAd}
+        />
       </HStack>
 
       <Text mt={"$10"}>Seus produtos anunciados para venda</Text>

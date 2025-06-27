@@ -1,12 +1,9 @@
 import React, { useCallback, useState } from "react";
 import {
-  Checkbox,
-  CheckboxIcon,
-  CheckboxIndicator,
+  Checkbox as GluestackCheckbox,
   CheckboxLabel,
   Heading,
   HStack,
-  Switch,
   VStack,
 } from "@gluestack-ui/themed";
 import BottomSheet, {
@@ -15,11 +12,13 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 
-import { X, Check } from "phosphor-react-native";
+import { X } from "phosphor-react-native";
 
 import XCircle from "@assets/x_circle.svg";
 
 import { Button } from "@components/Button";
+import { Checkbox } from "@components/Checkbox";
+import { Switch } from "@components/Switch";
 
 type Props = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -42,25 +41,6 @@ export function SheetFilter({ bottomSheetRef }: Props) {
     []
   );
 
-  function buildCheckbox({ value, title }: { value: string; title: string }) {
-    return (
-      <Checkbox value={value} aria-label={value} mt={"$2"}>
-        <CheckboxIndicator
-          sx={{
-            ":checked": {
-              bgColor: tokens.colors.blueLight,
-              borderColor: tokens.colors.blueLight,
-            },
-            borderColor: tokens.colors.gray5,
-          }}
-        >
-          <CheckboxIcon as={Check} color="$white" />
-        </CheckboxIndicator>
-        <CheckboxLabel ml={"$3"}>{title}</CheckboxLabel>
-      </Checkbox>
-    );
-  }
-
   return (
     <BottomSheet
       ref={bottomSheetRef}
@@ -82,7 +62,7 @@ export function SheetFilter({ bottomSheetRef }: Props) {
           </Heading>
 
           <HStack gap={8}>
-            <Checkbox
+            <GluestackCheckbox
               value="usado"
               bgColor="$gray5"
               $checked-bgColor="$blueLight"
@@ -102,9 +82,9 @@ export function SheetFilter({ bottomSheetRef }: Props) {
                 USADO
               </CheckboxLabel>
               {isUsedChecked && <XCircle style={{ marginLeft: 6 }} />}
-            </Checkbox>
+            </GluestackCheckbox>
 
-            <Checkbox
+            <GluestackCheckbox
               value="novo"
               bgColor="$gray5"
               $checked-bgColor="$blueLight"
@@ -124,30 +104,24 @@ export function SheetFilter({ bottomSheetRef }: Props) {
                 NOVO
               </CheckboxLabel>
               {isNewChecked && <XCircle style={{ marginLeft: 6 }} />}
-            </Checkbox>
+            </GluestackCheckbox>
           </HStack>
 
           <Heading fontSize={"$sm"} color="$gray2" mt={"$4"}>
             Aceita troca?
           </Heading>
 
-          <Switch
-            trackColor={{
-              false: tokens.colors.gray5,
-              true: tokens.colors.blueLight,
-            }}
-            aria-live="polite"
-          />
+          <Switch />
 
           <Heading fontSize={"$sm"} color="$gray2" mt={"$4"}>
             Meios de pagamento aceitos
           </Heading>
 
-          {buildCheckbox({ value: "boleto", title: "Boleto" })}
-          {buildCheckbox({ value: "pix", title: "Pix" })}
-          {buildCheckbox({ value: "cash", title: "Dinheiro" })}
-          {buildCheckbox({ value: "credit_card", title: "Cartão de crédito" })}
-          {buildCheckbox({ value: "deposit", title: "Depósito Bancário" })}
+          <Checkbox value="boleto" title="Boleto" />
+          <Checkbox value="pix" title="Pix" />
+          <Checkbox value="cash" title="Dinheiro" />
+          <Checkbox value="credit_card" title="Cartão de crédito" />
+          <Checkbox value="deposit" title="Depósito bancário" />
 
           <HStack mt={"$12"} gap={12}>
             <Button title="Resetar filtros" isFlex variant="outline" />

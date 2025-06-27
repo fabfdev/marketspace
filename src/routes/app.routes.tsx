@@ -16,6 +16,7 @@ import { Home } from "@screens/Home";
 import { MyAds } from "@screens/MyAds";
 import { Logout } from "@screens/Logout";
 import { AdDetails } from "@screens/AdDetails";
+import { CreationEditionAd } from "@screens/CreationEditionAd";
 
 import { SheetFilter } from "@components/SheetFilter";
 
@@ -27,6 +28,7 @@ type AppRoutes = {
   adDetails: {
     isEdit: boolean;
   };
+  creationEditionAd: undefined;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
@@ -116,6 +118,7 @@ export function AppRoutes() {
       <StackNavigator screenOptions={{ headerShown: false }}>
         <StackScreen name="home" component={TabNavigator} />
         <StackScreen name="adDetails" component={AdDetails} />
+        <StackScreen name="creationEditionAd" component={CreationEditionAd} />
       </StackNavigator>
       <SheetFilter bottomSheetRef={sheetFilterRef} />
     </>
