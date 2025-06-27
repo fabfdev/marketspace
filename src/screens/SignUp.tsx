@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Center,
@@ -10,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import * as ImagePicker from "expo-image-picker";
 
 import Logo from "@assets/logo.svg";
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
@@ -59,6 +61,29 @@ export function SignUp() {
     },
     resolver: yupResolver(signUpSchema),
   });
+  const [userPhoto, setUserPhoto] = useState<string | null>(null);
+
+  async function handleImageSelection() {
+    try {
+      const imageSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: "images",
+        quality: 1,
+        aspect: [4, 4]
+      })
+
+      if (imageSelected.canceled) {
+        return;
+      }
+
+      const photoUri = imageSelected.assets[0].uri;
+
+      if (photoUri) {
+        setUserPhoto(photoUri);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   function handleSignUp({ name, email, phone, password }: FormDataProps) {
     console.log({ name, email, phone, password });
@@ -86,7 +111,7 @@ export function SignUp() {
 
           <Box position="relative" mt={"$5"} mb={"$3"}>
             <UserPhoto
-              source={defaultUserPhotoImg}
+              source={userPhoto ? { uri: userPhoto } : defaultUserPhotoImg}
               alt="Foto do usuário"
               size="lg"
             />
@@ -95,6 +120,7 @@ export function SignUp() {
               alignSelf="flex-end"
               bottom={0}
               right={-10}
+              onPress={handleImageSelection}
             />
           </Box>
 
