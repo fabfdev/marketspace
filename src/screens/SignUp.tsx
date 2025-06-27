@@ -145,6 +145,7 @@ export function SignUp() {
                 placeholder="Senha"
                 onChangeText={onChange}
                 value={value}
+                secureTextEntry
                 errorMessage={errors.password?.message}
               />
             )}
@@ -158,6 +159,7 @@ export function SignUp() {
                 placeholder="Confirmar senha"
                 onChangeText={onChange}
                 value={value}
+                secureTextEntry
                 errorMessage={errors.confirm_password?.message}
               />
             )}
