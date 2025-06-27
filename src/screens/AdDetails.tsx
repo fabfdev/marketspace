@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Dimensions, View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import {
+  Box,
   Heading,
   HStack,
   Image,
@@ -56,6 +57,8 @@ export function AdDetails() {
     });
   };
 
+  let isUnactive = true;
+
   function handleBack() {
     navigator.goBack();
   }
@@ -83,15 +86,38 @@ export function AdDetails() {
             loop
             onProgressChange={progress}
             renderItem={({ index }) => (
-              <Image
-                source={{
-                  uri: "https://thumbs.dreamstime.com/b/exposi%C3%A7%C3%A3o-de-sapatos-esportivos-nike-na-prateleira-da-loja-novi-micmichigan-oct-%C3%A9-uma-empresa-americana-que-projeta-marketing-259470358.jpg",
-                }}
-                flex={1}
-                w={"$full"}
-                resizeMode="cover"
-                alt="alea"
-              />
+              <>
+                <Image
+                  source={{
+                    uri: "https://thumbs.dreamstime.com/b/exposi%C3%A7%C3%A3o-de-sapatos-esportivos-nike-na-prateleira-da-loja-novi-micmichigan-oct-%C3%A9-uma-empresa-americana-que-projeta-marketing-259470358.jpg",
+                  }}
+                  flex={1}
+                  w={"$full"}
+                  resizeMode="cover"
+                  alt="alea"
+                />
+                {isUnactive && (
+                  <Box
+                    position="absolute"
+                    bgColor="$black50alpha"
+                    w={"$full"}
+                    h={"$full"}
+                    rounded={"$md"}
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <Text
+                      color={"$gray7"}
+                      fontSize={"$sm"}
+                      fontFamily="$heading"
+                      mx={"$1"}
+                      mb={"$2"}
+                    >
+                      ANÚNCIO DESATIVADO
+                    </Text>
+                  </Box>
+                )}
+              </>
             )}
           />
 
@@ -185,7 +211,10 @@ export function AdDetails() {
 
       {isEdit && (
         <VStack px={"$8"} pb={"$10"} pt={"$3.5"} gap={"$2"}>
-          <Button title="Desativar anúncio" variant="link" />
+          <Button
+            title={isUnactive ? "Reativar anúncio" : "Desativar anúncio"}
+            variant={isUnactive ? "solid" : "link"}
+          />
           <Button title="Excluir anúncio" variant="outline" />
         </VStack>
       )}

@@ -84,7 +84,9 @@ export function MyAds() {
           data={data}
           keyExtractor={(item) => item.id}
           numColumns={2}
-          renderItem={({ item }) => <AdItem isMine isDisabled onClick={handleOpenDetails} />}
+          renderItem={({ item }) => (
+            <AdItem isMine isDisabled onClick={handleOpenDetails} />
+          )}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 24 }}
           columnWrapperStyle={{ gap: 20 }}
