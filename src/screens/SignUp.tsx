@@ -7,6 +7,9 @@ import {
   VStack,
 } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 import Logo from "@assets/logo.svg";
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
@@ -18,8 +21,48 @@ import { ButtonEdit } from "@components/ButtonEdit";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+type FormDataProps = {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirm_password: string;
+};
+
+const signUpSchema = yup.object({
+  name: yup.string().required("Informe o nome"),
+  email: yup.string().required("Informe o e-mail").email("E-mail inválido"),
+  phone: yup.string().required("Informe o telefone").min(10).max(11),
+  password: yup
+    .string()
+    .required("Informe a senha")
+    .min(6, "A senha deve ter pelo menos 6 dígitos"),
+  confirm_password: yup
+    .string()
+    .required("Confirme a senha")
+    .oneOf([yup.ref("password"), ""], "A confirmação da senha não confere"),
+});
+
 export function SignUp() {
   const navigator = useNavigation<AuthNavigatorRoutesProps>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirm_password: "",
+    },
+    resolver: yupResolver(signUpSchema),
+  });
+
+  function handleSignUp({ name, email, phone, password }: FormDataProps) {
+    console.log({ name, email, phone, password });
+  }
 
   function handleSignIn() {
     navigator.goBack();
@@ -55,17 +98,77 @@ export function SignUp() {
             />
           </Box>
 
-          <Input placeholder="Nome" />
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Nome"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.name?.message}
+              />
+            )}
+          />
 
-          <Input placeholder="E-mail" />
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="E-mail"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.email?.message}
+              />
+            )}
+          />
 
-          <Input placeholder="Telefone" />
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Telefone"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.phone?.message}
+              />
+            )}
+          />
 
-          <Input placeholder="Senha" />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Senha"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
 
-          <Input placeholder="Confirmar senha" />
+          <Controller
+            control={control}
+            name="confirm_password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Confirmar senha"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.confirm_password?.message}
+              />
+            )}
+          />
 
-          <Button title="Criar" variant="link" mt={"$2"} />
+          <Button
+            title="Criar"
+            variant="link"
+            mt={"$2"}
+            onPress={handleSubmit(handleSignUp)}
+          />
         </Center>
 
         <Text textAlign="center" mb={"$4"}>
