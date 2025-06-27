@@ -1,26 +1,18 @@
 import { Heading, HStack, Pressable } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { ArrowLeft } from "phosphor-react-native";
-import { ComponentProps } from "react";
 
-type RouteParamProps = ComponentProps<typeof HStack> & {
+type RouteParamProps = {
   title: string;
+  handleBack?: () => void;
 }
 
-export function Toolbar({ title }: RouteParamProps) {
-  const navigator = useNavigation<AppNavigatorRoutesProps>();
-
-  function handleBack() {
-    navigator.goBack();
-  }
-
+export function Toolbar({ title, handleBack = () => {} }: RouteParamProps) {
   return (
-    <HStack pt={"$16"} alignItems="center">
+    <HStack pt={"$16"} alignItems="center" gap={"$4"}>
       <Pressable pl={"$8"} onPress={handleBack}>
         <ArrowLeft />
       </Pressable>
-      <Heading position="absolute" w={"$full"} alignSelf="flex-end" textAlign="center">
+      <Heading>
         {title}
       </Heading>
     </HStack>

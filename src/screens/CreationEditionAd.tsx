@@ -13,6 +13,7 @@ import {
   ScrollView,
   HStack,
 } from "@gluestack-ui/themed";
+import { useNavigation } from "@react-navigation/native";
 
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 
@@ -25,9 +26,10 @@ import { Button } from "@components/Button";
 
 export function CreationEditionAd() {
   const { tokens } = gluestackUIConfig;
+  const { goBack } = useNavigation();
   return (
     <VStack flex={1}>
-      <Toolbar title="Criar anúncio" px={"$8"}/>
+      <Toolbar title="Criar anúncio" handleBack={goBack}/>
 
       <ScrollView showsVerticalScrollIndicator={false} px={"$8"} contentContainerStyle={{ paddingBottom: 24 }}>
         <Heading fontSize={"$md"} mt={"$6"}>
@@ -97,7 +99,7 @@ export function CreationEditionAd() {
       </ScrollView>
 
       <HStack pb={"$8"} bgColor="$white" px={"$8"} pt={"$4"} gap={"$3"}>
-        <Button title="Cancelar" isFlex variant="outline"/>
+        <Button title="Cancelar" isFlex variant="outline" onPress={goBack}/>
         <Button title="Avançar" isFlex variant="link"/>
       </HStack>
     </VStack>
