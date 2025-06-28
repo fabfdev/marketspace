@@ -18,10 +18,13 @@ import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
 
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
+import { api } from "@services/api";
+
 import { UserPhoto } from "@components/UserPhoto";
 import { ButtonEdit } from "@components/ButtonEdit";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { AppError } from "@utils/AppError";
 
 type FormDataProps = {
   name: string;
@@ -61,10 +64,14 @@ export function SignUp() {
     },
     resolver: yupResolver(signUpSchema),
   });
+
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
 
   async function handleImageSelection() {
     try {
+      setIsImageLoading(true);
       const imageSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: "images",
         quality: 1,
@@ -82,11 +89,28 @@ export function SignUp() {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsImageLoading(false);
     }
   }
 
-  function handleSignUp({ name, email, phone, password }: FormDataProps) {
-    console.log({ name, email, phone, password });
+  async function handleSignUp({ name, email, phone, password }: FormDataProps) {
+    try {
+      setIsLoading(true);
+      const data = new FormData();
+
+      data.append("name", name);
+      data.append("email", email);
+      data.append("tel", phone);
+      data.append("password", password);
+
+      await api.post("/users", data, { headers: { "Content-Type": "multipart/form-data" } });
+    } catch (error) {
+      setIsLoading(false);
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
+    }
   }
 
   function handleSignIn() {
@@ -196,6 +220,7 @@ export function SignUp() {
             variant="link"
             mt={"$2"}
             onPress={handleSubmit(handleSignUp)}
+            isLoading={isLoading}
           />
         </Center>
 

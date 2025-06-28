@@ -1,5 +1,5 @@
 import { ComponentProps } from "react";
-import { Button as GluestackButton, Text } from "@gluestack-ui/themed";
+import { Center, Button as GluestackButton, Spinner, Text } from "@gluestack-ui/themed";
 
 type ButtonVariantProps = "solid" | "link" | "outline";
 
@@ -35,8 +35,10 @@ export function Button({
       }
       {...rest}
       rounded={"$lg"}
+      disabled={isLoading}
     >
-      <Text
+      {!isLoading ? (
+        <Text
         color={
           variant === "solid"
             ? "$gray7"
@@ -49,6 +51,11 @@ export function Button({
       >
         {title}
       </Text>
+      ) : (
+        <Center>
+          <Spinner color={"$blueLight"}/>
+        </Center>
+      )}
     </GluestackButton>
   );
 }
