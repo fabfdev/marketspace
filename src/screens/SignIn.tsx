@@ -19,6 +19,7 @@ import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { AppError } from "@utils/AppError";
+import { useAuth } from "@hooks/useAuth";
 
 type FormDataProps = {
   email: string;
@@ -27,16 +28,21 @@ type FormDataProps = {
 
 const signInSchema = yup.object({
   email: yup.string().required("Informe o e-mail"),
-  password: yup.string().required("Informe a senha")
-})
+  password: yup.string().required("Informe a senha"),
+});
 
 export function SignIn() {
   const navigator = useNavigation<AuthNavigatorRoutesProps>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
-    resolver: yupResolver(signInSchema)
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(signInSchema),
   });
+  const { signIn } = useAuth();
 
   function handleSignUp() {
     navigator.navigate("signUp");
@@ -45,11 +51,11 @@ export function SignIn() {
   async function handleSignIn({ email, password }: FormDataProps) {
     try {
       setIsLoading(true);
-      console.log({email, password})
+      await signIn(email, password);
     } catch (error) {
       setIsLoading(false);
       const isAppError = error instanceof AppError;
-      const message = isAppError ? error.message : "Erro";
+      const message = isAppError ? error.message : error;
       console.log(message);
     }
   }
@@ -116,6 +122,7 @@ export function SignIn() {
             title="Entrar"
             mt={"$8"}
             onPress={handleSubmit(handleSignIn)}
+            isLoading={isLoading}
           />
         </Center>
 
