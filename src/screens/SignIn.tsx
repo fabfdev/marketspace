@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Center,
   Heading,
@@ -13,12 +14,25 @@ import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { AppError } from "@utils/AppError";
 
 export function SignIn() {
   const navigator = useNavigation<AuthNavigatorRoutesProps>();
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleSignUp() {
     navigator.navigate("signUp");
+  }
+
+  async function handleSignIn() {
+    try {
+      setIsLoading(true);
+    } catch (error) {
+      setIsLoading(false);
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
+    }
   }
 
   return (
@@ -53,7 +67,7 @@ export function SignIn() {
 
           <Input placeholder="Senha" />
 
-          <Button title="Entrar" mt={"$8"} />
+          <Button title="Entrar" mt={"$8"} onPress={handleSignIn} />
         </Center>
 
         <Center gap={"$4"} bg="$gray7" px={"$16"} h={"$56"}>

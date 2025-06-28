@@ -34,6 +34,12 @@ type FormDataProps = {
   confirm_password: string;
 };
 
+type PhotoFile = {
+  name: string;
+  uri: string;
+  type: string;
+};
+
 const signUpSchema = yup.object({
   name: yup.string().required("Informe o nome"),
   email: yup.string().required("Informe o e-mail").email("E-mail inválido"),
@@ -67,7 +73,7 @@ export function SignUp() {
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [userPhoto, setUserPhoto] = useState<string | null>(null);
+  const [userPhoto, setUserPhoto] = useState<PhotoFile | null>(null);
 
   async function handleImageSelection() {
     try {
@@ -75,8 +81,8 @@ export function SignUp() {
       const imageSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: "images",
         quality: 1,
-        aspect: [4, 4]
-      })
+        aspect: [4, 4],
+      });
 
       if (imageSelected.canceled) {
         return;
@@ -85,10 +91,16 @@ export function SignUp() {
       const photoUri = imageSelected.assets[0].uri;
 
       if (photoUri) {
-        setUserPhoto(photoUri);
+        const fileExt = photoUri.split(".").pop();
+        const photoFile = {
+          name: `${imageSelected.assets[0].fileName}`.toLowerCase(),
+          uri: photoUri,
+          type: `${imageSelected.assets[0].type}/${fileExt}`,
+        };
+        setUserPhoto(photoFile);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsImageLoading(false);
     }
@@ -96,15 +108,32 @@ export function SignUp() {
 
   async function handleSignUp({ name, email, phone, password }: FormDataProps) {
     try {
+      if (!userPhoto) {
+        return;
+      }
       setIsLoading(true);
-      const data = new FormData();
 
+      const updatedUserPhoto: PhotoFile = {
+        name: `${name}.${userPhoto.type.split("/").pop()}`,
+        uri: userPhoto?.uri,
+        type: userPhoto?.type,
+      };
+      setUserPhoto(updatedUserPhoto);
+
+      const data = new FormData();
+      data.append("avatar", updatedUserPhoto as any);
       data.append("name", name);
       data.append("email", email);
       data.append("tel", phone);
       data.append("password", password);
 
-      await api.post("/users", data, { headers: { "Content-Type": "multipart/form-data" } });
+      await api.post("/users", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      navigator.goBack();
     } catch (error) {
       setIsLoading(false);
       const isAppError = error instanceof AppError;
@@ -135,7 +164,7 @@ export function SignUp() {
 
           <Box position="relative" mt={"$5"} mb={"$3"}>
             <UserPhoto
-              source={userPhoto ? { uri: userPhoto } : defaultUserPhotoImg}
+              source={userPhoto ? { uri: userPhoto.uri } : defaultUserPhotoImg}
               alt="Foto do usuário"
               size="lg"
             />
