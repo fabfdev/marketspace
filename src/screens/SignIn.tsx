@@ -1,8 +1,6 @@
-import { useState } from "react";
 import {
   Center,
   Heading,
-  onChange,
   ScrollView,
   Text,
   VStack,
@@ -33,7 +31,6 @@ const signInSchema = yup.object({
 
 export function SignIn() {
   const navigator = useNavigation<AuthNavigatorRoutesProps>();
-  const [isLoading, setIsLoading] = useState(false);
 
   const {
     control,
@@ -42,7 +39,7 @@ export function SignIn() {
   } = useForm<FormDataProps>({
     resolver: yupResolver(signInSchema),
   });
-  const { signIn } = useAuth();
+  const { signIn, isLoadingUserStorageData } = useAuth();
 
   function handleSignUp() {
     navigator.navigate("signUp");
@@ -50,10 +47,8 @@ export function SignIn() {
 
   async function handleSignIn({ email, password }: FormDataProps) {
     try {
-      setIsLoading(true);
       await signIn(email, password);
     } catch (error) {
-      setIsLoading(false);
       const isAppError = error instanceof AppError;
       const message = isAppError ? error.message : error;
       console.log(message);
@@ -122,7 +117,7 @@ export function SignIn() {
             title="Entrar"
             mt={"$8"}
             onPress={handleSubmit(handleSignIn)}
-            isLoading={isLoading}
+            isLoading={isLoadingUserStorageData}
           />
         </Center>
 
