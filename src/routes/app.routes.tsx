@@ -19,6 +19,7 @@ import { AdDetails } from "@screens/AdDetails";
 import { CreationEditionAd } from "@screens/CreationEditionAd";
 
 import { SheetFilter } from "@components/SheetFilter";
+import { useAuth } from "@hooks/useAuth";
 
 type AppRoutes = {
   home: undefined;
@@ -40,6 +41,8 @@ const { Navigator: StackNavigator, Screen: StackScreen } =
 export function AppRoutes() {
   const { tokens } = gluestackUIConfig;
   const sheetFilterRef = useRef<BottomSheet>(null);
+
+  const { signOut } = useAuth();
 
   function handleOpenSheet() {
     sheetFilterRef?.current?.snapToIndex(0);
@@ -92,7 +95,7 @@ export function AppRoutes() {
               Alert.alert("Sair", "Deseja sair?", [
                 {
                   text: "Sim",
-                  onPress: () => console.log("Sair"),
+                  onPress: async () => await signOut(),
                   style: "destructive",
                 },
                 {

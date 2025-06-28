@@ -11,8 +11,6 @@ export function Routes() {
 
   const { user } = useAuth();
 
-  console.log(user.id);
-
   return (
     <Box flex={1}>
       <NavigationContainer theme={theme}>
