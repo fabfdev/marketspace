@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, Heading, HStack, Text, VStack } from "@gluestack-ui/themed";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
@@ -25,6 +25,7 @@ export function Home({ openSheet }: { openSheet: () => void }) {
   const [otherUserProducts, setOtherUserProducts] = useState<ProductsDTO[]>(
     [] as ProductsDTO[]
   );
+  const [filterQuery, setFilterQuery] = useState("");
 
   function handleOpenDetails() {
     navigator.navigate("adDetails", { isEdit: false });
@@ -36,6 +37,10 @@ export function Home({ openSheet }: { openSheet: () => void }) {
 
   function handleOpenCreationAd() {
     navigator.navigate("creationEditionAd");
+  }
+
+  function handleInputFilterQuery(value: string) {
+    setFilterQuery(value);
   }
 
   async function fetchUserProducts() {
@@ -52,9 +57,12 @@ export function Home({ openSheet }: { openSheet: () => void }) {
   async function fetchOtherUserProducts() {
     try {
       setIsLoading(true);
-      const { data } = await api.get("/products");
+      const { data } = await api.get("/products", {
+        params: {
+          query: filterQuery,
+        },
+      });
       setOtherUserProducts(data);
-      console.log(data);
     } catch (error) {
       const isAppError = error instanceof AppError;
       const message = isAppError ? error.message : "Erro";
@@ -63,6 +71,10 @@ export function Home({ openSheet }: { openSheet: () => void }) {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    fetchOtherUserProducts();
+  }, [filterQuery]);
 
   useFocusEffect(
     useCallback(() => {
@@ -94,6 +106,22 @@ export function Home({ openSheet }: { openSheet: () => void }) {
         />
       </HStack>
 
+      <Text mt={"$10"}>Seus produtos anunciados para venda</Text>
+
+      <MyAdsButton
+        myActiveAdsSize={userProducts.length}
+        onPress={handleOpenMyAds}
+      />
+
+      <Text mt={"$10"}>Compre produtos variados</Text>
+
+      <InputSearch
+        mt={"$4"}
+        handleFilter={openSheet}
+        onChangeText={handleInputFilterQuery}
+        value={filterQuery}
+      />
+
       <FlatList
         data={otherUserProducts}
         //@ts-ignore
@@ -105,21 +133,6 @@ export function Home({ openSheet }: { openSheet: () => void }) {
         )}
         showsVerticalScrollIndicator={false}
         columnWrapperStyle={{ gap: 20 }}
-        pt={"$10"}
-        ListHeaderComponent={() => (
-          <>
-            <Text>Seus produtos anunciados para venda</Text>
-
-            <MyAdsButton
-              myActiveAdsSize={userProducts.length}
-              onPress={handleOpenMyAds}
-            />
-
-            <Text mt={"$10"}>Compre produtos variados</Text>
-
-            <InputSearch mt={"$4"} mb={"$6"} handleFilter={openSheet} />
-          </>
-        )}
       />
     </VStack>
   );
