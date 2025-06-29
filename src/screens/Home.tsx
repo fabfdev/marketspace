@@ -1,5 +1,4 @@
-import { FlatList } from "react-native";
-import { Heading, HStack, Text, VStack } from "@gluestack-ui/themed";
+import { FlatList, Heading, HStack, Text, VStack } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
@@ -55,22 +54,25 @@ export function Home({ openSheet }: { openSheet: () => void }) {
         />
       </HStack>
 
-      <Text mt={"$10"}>Seus produtos anunciados para venda</Text>
-
-      <MyAdsButton onPress={handleOpenMyAds} />
-
-      <Text mt={"$10"}>Compre produtos variados</Text>
-
-      <InputSearch mt={"$4"} handleFilter={openSheet} />
-
       <FlatList
         data={data}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => (item as { id: string, title: string }).id}
         numColumns={2}
         renderItem={({ item }) => <AdItem onClick={handleOpenDetails} />}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingVertical: 24 }}
         columnWrapperStyle={{ gap: 20 }}
+        pt={"$10"}
+        ListHeaderComponent={() => (
+          <>
+            <Text>Seus produtos anunciados para venda</Text>
+
+            <MyAdsButton onPress={handleOpenMyAds} />
+
+            <Text mt={"$10"}>Compre produtos variados</Text>
+
+            <InputSearch mt={"$4"} mb={"$6"} handleFilter={openSheet} />
+          </>
+        )}
       />
     </VStack>
   );
