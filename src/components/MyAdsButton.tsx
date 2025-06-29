@@ -4,9 +4,11 @@ import { Tag, ArrowRight } from "phosphor-react-native";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { ComponentProps } from "react";
 
-type Props = ComponentProps<typeof Pressable>;
+type Props = ComponentProps<typeof Pressable> & {
+  myActiveAdsSize: number;
+};
 
-export function MyAdsButton({ ...rest }: Props) {
+export function MyAdsButton({ myActiveAdsSize = 0, ...rest }: Props) {
   const { tokens } = gluestackUIConfig;
 
   return (
@@ -21,7 +23,7 @@ export function MyAdsButton({ ...rest }: Props) {
       <HStack alignItems="center">
         <Tag color={tokens.colors.blue} />
         <VStack ml={"$4"} flex={1}>
-          <Heading>4</Heading>
+          <Heading>{myActiveAdsSize}</Heading>
           <Text>anúncios ativos</Text>
         </VStack>
 

@@ -1,5 +1,6 @@
+import { useCallback, useState } from "react";
 import { FlatList, Heading, HStack, Text, VStack } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
 
@@ -8,11 +9,19 @@ import { Button } from "@components/Button";
 import { InputSearch } from "@components/InputSearch";
 import { AdItem } from "@components/AdItem";
 import { MyAdsButton } from "@components/MyAdsButton";
+import { AppError } from "@utils/AppError";
+import { api } from "@services/api";
 
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { ProductsDTO } from "@dtos/ProductsDTO";
 
 export function Home({ openSheet }: { openSheet: () => void }) {
   const navigator = useNavigation<AppNavigatorRoutesProps>();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [userProducts, setUserProducts] = useState<ProductsDTO[]>(
+    [] as ProductsDTO[]
+  );
 
   const data = Array.from({ length: 10 }).map((_, i) => ({
     id: i.toString(),
@@ -30,6 +39,26 @@ export function Home({ openSheet }: { openSheet: () => void }) {
   function handleOpenCreationAd() {
     navigator.navigate("creationEditionAd");
   }
+
+  async function fetchUserProducts() {
+    try {
+      setIsLoading(true);
+      const { data } = await api.get("/users/products");
+      setUserProducts(data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserProducts();
+    }, [])
+  );
 
   return (
     <VStack flex={1} pt={"$16"} px={"$8"} bgColor="$gray6">
@@ -56,7 +85,7 @@ export function Home({ openSheet }: { openSheet: () => void }) {
 
       <FlatList
         data={data}
-        keyExtractor={(item) => (item as { id: string, title: string }).id}
+        keyExtractor={(item) => (item as { id: string; title: string }).id}
         numColumns={2}
         renderItem={({ item }) => <AdItem onClick={handleOpenDetails} />}
         showsVerticalScrollIndicator={false}
@@ -66,7 +95,10 @@ export function Home({ openSheet }: { openSheet: () => void }) {
           <>
             <Text>Seus produtos anunciados para venda</Text>
 
-            <MyAdsButton onPress={handleOpenMyAds} />
+            <MyAdsButton
+              myActiveAdsSize={userProducts.length}
+              onPress={handleOpenMyAds}
+            />
 
             <Text mt={"$10"}>Compre produtos variados</Text>
 
