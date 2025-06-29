@@ -13,9 +13,11 @@ import {
   ScrollView,
   HStack,
   FlatList,
+  CheckboxGroup,
 } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
+import { Controller, useForm } from "react-hook-form";
 
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 
@@ -30,13 +32,32 @@ import { Toolbar } from "@components/Toolbar";
 import { ImageAdCreation } from "@components/ImageAdCreation";
 
 import { ImagesDTO } from "@dtos/ImagesDTO";
+import { useInputFormatter } from "@hooks/useInputFormatter";
+
+type FormDataProps = {
+  name: string;
+  description: string;
+  is_new: boolean;
+  price: number;
+  accept_trade: boolean;
+  payment_methods: string[];
+};
 
 export function CreationEditionAd() {
   const { tokens } = gluestackUIConfig;
 
   const { goBack } = useNavigation();
+  const { control, handleSubmit } = useForm<FormDataProps>({
+    defaultValues: {
+      is_new: true,
+      accept_trade: false,
+      payment_methods: [],
+    },
+  });
+  const { formatBRL, parseBRL } = useInputFormatter();
 
   const [imagesData, setImagesData] = useState<ImagesDTO[]>([] as ImagesDTO[]);
+  const [displayValue, setDisplayValue] = useState("");
 
   async function handleImageSelection() {
     try {
@@ -63,8 +84,12 @@ export function CreationEditionAd() {
   }
 
   function handleImageDeletion(_index: number) {
-    const newData = imagesData.filter(({  }, index) => index !== _index);
+    const newData = imagesData.filter(({}, index) => index !== _index);
     setImagesData(newData);
+  }
+
+  function handleAdCreation(data: FormDataProps) {
+    console.log({ data });
   }
 
   return (
@@ -116,51 +141,125 @@ export function CreationEditionAd() {
           Sobre o produto
         </Heading>
 
-        <Input placeholder="Título do produto" />
-        <Textarea placeholder="Descrição do produto" />
+        <Controller
+          control={control}
+          name="name"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              placeholder="Título do produto"
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+        />
 
-        <RadioGroup flexDirection="row" justifyContent="space-evenly">
-          <Radio value="new" gap={"$2"}>
-            <RadioIndicator $checked-borderColor="$blueLight">
-              <RadioIcon as={CircleIcon} color="$blueLight" />
-            </RadioIndicator>
-            <RadioLabel>Produto novo</RadioLabel>
-          </Radio>
+        <Controller
+          control={control}
+          name="description"
+          render={({ field: { onChange, value } }) => (
+            <Textarea
+              placeholder="Descrição do produto"
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+        />
 
-          <Radio value="old" gap={"$2"}>
-            <RadioIndicator $checked-borderColor="$blueLight">
-              <RadioIcon as={CircleIcon} color="$blueLight" />
-            </RadioIndicator>
-            <RadioLabel>Produto usado</RadioLabel>
-          </Radio>
-        </RadioGroup>
+        <Controller
+          control={control}
+          name="is_new"
+          render={({ field: { onChange, value } }) => (
+            <RadioGroup
+              flexDirection="row"
+              justifyContent="space-evenly"
+              value={value ? "new" : "old"}
+              onChange={(val) => onChange(val === "new")}
+            >
+              <Radio value="new" gap={"$2"}>
+                <RadioIndicator $checked-borderColor="$blueLight">
+                  <RadioIcon as={CircleIcon} color="$blueLight" />
+                </RadioIndicator>
+                <RadioLabel>Produto novo</RadioLabel>
+              </Radio>
+
+              <Radio value="old" gap={"$2"}>
+                <RadioIndicator $checked-borderColor="$blueLight">
+                  <RadioIcon as={CircleIcon} color="$blueLight" />
+                </RadioIndicator>
+                <RadioLabel>Produto usado</RadioLabel>
+              </Radio>
+            </RadioGroup>
+          )}
+        />
 
         <Heading fontSize={"$md"} mt={"$6"} mb={"$2"}>
           Venda
         </Heading>
 
-        <Input placeholder="Valor do produto" />
+        <Controller
+          control={control}
+          name="price"
+          render={({ field: { onChange, value } }) => {
+            return (
+              <Input
+                placeholder="Valor do produto"
+                keyboardType="numeric"
+                value={displayValue}
+                onChangeText={(text) => {
+                  if (text === "") {
+                    setDisplayValue("");
+                    onChange(0);
+                    return;
+                  }
+
+                  const formatted = formatBRL(text);
+                  setDisplayValue(formatted);
+                  onChange(parseBRL(formatted));
+                }}
+              />
+            );
+          }}
+        />
 
         <Heading fontSize={"$md"} mt={"$6"} mb={"$2"}>
           Aceita troca?
         </Heading>
 
-        <Switch />
+        <Controller
+          control={control}
+          name="accept_trade"
+          render={({ field: { onChange, value } }) => (
+            <Switch value={value} onValueChange={onChange} />
+          )}
+        />
 
         <Heading fontSize={"$md"} mt={"$6"} mb={"$2"}>
           Meios de pagamento aceitos
         </Heading>
 
-        <Checkbox value="billet" title="Boleto" />
-        <Checkbox value="pix" title="Pix" />
-        <Checkbox value="cash" title="Dinheiro" />
-        <Checkbox value="credit_card" title="Cartão de crédito" />
-        <Checkbox value="deposit" title="Depósito bancário" />
+        <Controller
+          control={control}
+          name="payment_methods"
+          render={({ field: { onChange, value } }) => (
+            <CheckboxGroup value={value || []} onChange={onChange}>
+              <Checkbox value="boleto" title="Boleto" />
+              <Checkbox value="pix" title="Pix" />
+              <Checkbox value="cash" title="Dinheiro" />
+              <Checkbox value="card" title="Cartão de crédito" />
+              <Checkbox value="deposit" title="Depósito bancário" />
+            </CheckboxGroup>
+          )}
+        />
       </ScrollView>
 
       <HStack pb={"$8"} bgColor="$white" px={"$8"} pt={"$4"} gap={"$3"}>
         <Button title="Cancelar" isFlex variant="outline" onPress={goBack} />
-        <Button title="Avançar" isFlex variant="link" />
+        <Button
+          title="Avançar"
+          isFlex
+          variant="link"
+          onPress={handleSubmit(handleAdCreation)}
+        />
       </HStack>
     </VStack>
   );
