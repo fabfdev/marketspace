@@ -9,19 +9,29 @@ import {
 
 import { UserPhoto } from "./UserPhoto";
 
+import { ProductsDTO } from "@dtos/ProductsDTO";
+import { useInputFormatter } from "@hooks/useInputFormatter";
+import { api } from "@services/api";
+
 type Props = {
   onClick?: () => void;
+  item: ProductsDTO;
   isMine?: boolean;
-  isDisabled?: boolean;
 };
 
-export function AdItem({ onClick, isMine = false, isDisabled = false }: Props) {
+export function AdItem({ onClick, item, isMine = false }: Props) {
+  const { formatToPrice } = useInputFormatter();
+
+  const isActive = () => {
+    return item.is_active === undefined || item.is_active;
+  };
+
   return (
     <Pressable flex={1} mb={"$8"} onPress={onClick}>
       <Box position="relative">
         <Image
           source={{
-            uri: "https://thumbs.dreamstime.com/b/exposi%C3%A7%C3%A3o-de-sapatos-esportivos-nike-na-prateleira-da-loja-novi-micmichigan-oct-%C3%A9-uma-empresa-americana-que-projeta-marketing-259470358.jpg",
+            uri: `${api.defaults.baseURL}/images/${item.product_images[0].path}`,
           }}
           alt="Cana"
           w={"$full"}
@@ -33,7 +43,7 @@ export function AdItem({ onClick, isMine = false, isDisabled = false }: Props) {
         {!isMine && (
           <UserPhoto
             source={{
-              uri: "https://pbs.twimg.com/media/GDLS7FPXQAA6gR_.jpg",
+              uri: `${api.defaults.baseURL}/images/${item.user.avatar}`,
             }}
             position="absolute"
             alt="Foto user"
@@ -45,11 +55,10 @@ export function AdItem({ onClick, isMine = false, isDisabled = false }: Props) {
           />
         )}
 
-        {/* $blue */}
         <Text
           position="absolute"
           alignSelf="flex-end"
-          bgColor="$gray2"
+          bgColor={item.is_new ? "$blue" : "$gray2"}
           color="$white"
           fontFamily="$heading"
           fontSize={"$xs"}
@@ -59,10 +68,10 @@ export function AdItem({ onClick, isMine = false, isDisabled = false }: Props) {
           top={5}
           right={5}
         >
-          USADO
+          {item.is_new ? "NOVO" : "USADO"}
         </Text>
 
-        {isDisabled && (
+        {!isActive() && (
           <Box
             position="absolute"
             bgColor="$black50alpha"
@@ -84,10 +93,19 @@ export function AdItem({ onClick, isMine = false, isDisabled = false }: Props) {
         )}
       </Box>
 
-      <Text mt={"$2"} color={!isDisabled ? "$gray2" : "$gray4"}>Tênis Nike</Text>
+      <Text mt={"$2"} color={isActive() ? "$gray2" : "$gray4"}>
+        {item.name}
+      </Text>
       <HStack alignItems="baseline">
-        <Text fontFamily="$heading" color={!isDisabled ? "$gray2" : "$gray4"}>R$</Text>
-        <Heading ml={"$1"} color={!isDisabled ? "$gray2" : "$gray4"}>120,00</Heading>
+        <Text
+          fontFamily="$heading"
+          color={isActive() ? "$gray2" : "$gray4"}
+        >
+          R$
+        </Text>
+        <Heading ml={"$1"} color={isActive() ? "$gray2" : "$gray4"}>
+          {formatToPrice(String(item.price))}
+        </Heading>
       </HStack>
     </Pressable>
   );

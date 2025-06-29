@@ -22,11 +22,9 @@ export function Home({ openSheet }: { openSheet: () => void }) {
   const [userProducts, setUserProducts] = useState<ProductsDTO[]>(
     [] as ProductsDTO[]
   );
-
-  const data = Array.from({ length: 10 }).map((_, i) => ({
-    id: i.toString(),
-    title: `Item ${i + 1}`,
-  }));
+  const [otherUserProducts, setOtherUserProducts] = useState<ProductsDTO[]>(
+    [] as ProductsDTO[]
+  );
 
   function handleOpenDetails() {
     navigator.navigate("adDetails", { isEdit: false });
@@ -42,9 +40,21 @@ export function Home({ openSheet }: { openSheet: () => void }) {
 
   async function fetchUserProducts() {
     try {
-      setIsLoading(true);
       const { data } = await api.get("/users/products");
       setUserProducts(data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
+    }
+  }
+
+  async function fetchOtherUserProducts() {
+    try {
+      setIsLoading(true);
+      const { data } = await api.get("/products");
+      setOtherUserProducts(data);
+      console.log(data);
     } catch (error) {
       const isAppError = error instanceof AppError;
       const message = isAppError ? error.message : "Erro";
@@ -57,6 +67,7 @@ export function Home({ openSheet }: { openSheet: () => void }) {
   useFocusEffect(
     useCallback(() => {
       fetchUserProducts();
+      fetchOtherUserProducts();
     }, [])
   );
 
@@ -84,10 +95,14 @@ export function Home({ openSheet }: { openSheet: () => void }) {
       </HStack>
 
       <FlatList
-        data={data}
-        keyExtractor={(item) => (item as { id: string; title: string }).id}
+        data={otherUserProducts}
+        //@ts-ignore
+        keyExtractor={(item) => item.id}
         numColumns={2}
-        renderItem={({ item }) => <AdItem onClick={handleOpenDetails} />}
+        renderItem={({ item }) => (
+          //@ts-ignore
+          <AdItem item={item} onClick={handleOpenDetails} />
+        )}
         showsVerticalScrollIndicator={false}
         columnWrapperStyle={{ gap: 20 }}
         pt={"$10"}

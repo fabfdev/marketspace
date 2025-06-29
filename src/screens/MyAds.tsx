@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import { Dimensions, FlatList } from "react-native";
 import {
   Center,
@@ -16,17 +17,26 @@ import {
   Text,
   VStack,
 } from "@gluestack-ui/themed";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { CaretDown } from "phosphor-react-native";
 
 import { AdItem } from "@components/AdItem";
-import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
+import { ProductsDTO } from "@dtos/ProductsDTO";
 
 const width = Dimensions.get("window").width;
 
 export function MyAds() {
   const navigator = useNavigation<AppNavigatorRoutesProps>();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [userProducts, setUserProducts] = useState<ProductsDTO[]>(
+    [] as ProductsDTO[]
+  );
+
   const data = Array.from({ length: 10 }).map((_, i) => ({
     id: i.toString(),
     title: `Item ${i + 1}`,
@@ -35,6 +45,26 @@ export function MyAds() {
   function handleOpenDetails() {
     navigator.navigate("adDetails", { isEdit: true });
   }
+
+  async function fetchUserProducts() {
+    try {
+      setIsLoading(true);
+      const { data } = await api.get("/users/products");
+      setUserProducts(data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserProducts();
+    }, [])
+  );
 
   return (
     <VStack bgColor="$gray6" flex={1} pt={"$16"}>
@@ -45,7 +75,7 @@ export function MyAds() {
       <VStack px={"$8"} pt={"$10"} flex={1}>
         <HStack alignItems="baseline">
           <Text flex={1} color="$gray2">
-            9 anúncios
+            {userProducts.length} anúncios
           </Text>
 
           <Select>
@@ -81,11 +111,15 @@ export function MyAds() {
         </HStack>
 
         <FlatList
-          data={data}
+          data={userProducts}
           keyExtractor={(item) => item.id}
           numColumns={2}
           renderItem={({ item }) => (
-            <AdItem isMine isDisabled onClick={handleOpenDetails} />
+            <AdItem
+              item={item}
+              isMine
+              onClick={handleOpenDetails}
+            />
           )}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 24 }}

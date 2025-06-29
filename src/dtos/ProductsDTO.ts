@@ -1,3 +1,5 @@
+import { UserDTO } from "./UserDTO";
+
 export type ProductsDTO = {
   accept_trade: boolean;
   created_at: string;
@@ -8,7 +10,13 @@ export type ProductsDTO = {
   name: string;
   payment_methods: string[];
   price: number;
-  product_images: string[];
+  product_images: ProductImages[];
   updated_at: string;
   user_id: string;
+  user: UserDTO;
+};
+
+export type ProductImages = {
+  id: string;
+  path: string;
 };
