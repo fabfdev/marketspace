@@ -29,13 +29,19 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] =
     useState(false);
 
+  function setUserAndToken(user: UserDTO, token: string) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    setUser(user);
+  }
+
   async function signIn(email: string, password: string) {
     try {
       setIsLoadingUserStorageData(true);
       const { data } = await api.post("/sessions", { email, password });
       if (data.user) {
         await storageUserSave(data.user);
-        setUser(data.user);
+        setUserAndToken(data.user, data.token);
       }
     } catch (error) {
       throw error;

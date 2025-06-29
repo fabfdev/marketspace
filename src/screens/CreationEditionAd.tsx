@@ -33,6 +33,8 @@ import { ImageAdCreation } from "@components/ImageAdCreation";
 
 import { ImagesDTO } from "@dtos/ImagesDTO";
 import { useInputFormatter } from "@hooks/useInputFormatter";
+import { AppError } from "@utils/AppError";
+import { api } from "@services/api";
 
 type FormDataProps = {
   name: string;
@@ -56,6 +58,7 @@ export function CreationEditionAd() {
   });
   const { formatBRL, parseBRL } = useInputFormatter();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [imagesData, setImagesData] = useState<ImagesDTO[]>([] as ImagesDTO[]);
   const [displayValue, setDisplayValue] = useState("");
 
@@ -65,7 +68,6 @@ export function CreationEditionAd() {
         allowsMultipleSelection: true,
         mediaTypes: "images",
         quality: 1,
-
         aspect: [4, 4],
       });
 
@@ -83,13 +85,63 @@ export function CreationEditionAd() {
     }
   }
 
+  async function handleImagesUploading(id: string) {
+    try {
+      const data = new FormData();
+      data.append("product_id", id);
+
+      imagesData.forEach((item, index) => {
+        data.append("images", {
+          name: item.fileName,
+          uri: item.uri,
+          type: item.type,
+        } as any);
+      });
+
+      await api.post("/products/images", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      
+      goBack();
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   function handleImageDeletion(_index: number) {
     const newData = imagesData.filter(({}, index) => index !== _index);
     setImagesData(newData);
   }
 
-  function handleAdCreation(data: FormDataProps) {
-    console.log({ data });
+  async function handleAdCreation({
+    name,
+    description,
+    is_new,
+    price,
+    accept_trade,
+    payment_methods,
+  }: FormDataProps) {
+    try {
+      setIsLoading(true);
+      const { data } = await api.post("/products", {
+        name,
+        description,
+        is_new,
+        price: price * 100,
+        accept_trade,
+        payment_methods,
+      });
+      await handleImagesUploading(data.id);
+    } catch (error) {
+      setIsLoading(false);
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
+    }
   }
 
   return (
@@ -259,6 +311,7 @@ export function CreationEditionAd() {
           isFlex
           variant="link"
           onPress={handleSubmit(handleAdCreation)}
+          isLoading={isLoading}
         />
       </HStack>
     </VStack>
