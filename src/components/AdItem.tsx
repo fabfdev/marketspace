@@ -27,7 +27,7 @@ export function AdItem({ onClick, item, isMine = false }: Props) {
   };
 
   return (
-    <Pressable flex={1} mb={"$8"} onPress={onClick}>
+    <Pressable flex={0.5} mb={"$8"} onPress={onClick}>
       <Box position="relative">
         <Image
           source={{
