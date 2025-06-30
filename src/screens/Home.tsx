@@ -14,6 +14,7 @@ import { api } from "@services/api";
 
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { ProductsDTO } from "@dtos/ProductsDTO";
+import { useAuth } from "@hooks/useAuth";
 
 export function Home({ openSheet }: { openSheet: () => void }) {
   const navigator = useNavigation<AppNavigatorRoutesProps>();
@@ -26,6 +27,8 @@ export function Home({ openSheet }: { openSheet: () => void }) {
     [] as ProductsDTO[]
   );
   const [filterQuery, setFilterQuery] = useState("");
+
+  const { user } = useAuth();
 
   function handleOpenDetails() {
     navigator.navigate("adDetails", { isEdit: false });
@@ -87,7 +90,7 @@ export function Home({ openSheet }: { openSheet: () => void }) {
     <VStack flex={1} pt={"$16"} px={"$8"} bgColor="$gray6">
       <HStack>
         <UserPhoto
-          source={defaultUserPhotoImg}
+          source={user.avatar ? { uri: `${api.defaults.baseURL}/images/${user.avatar}` } : defaultUserPhotoImg}
           alt="Foto do usuário"
           h={"$12"}
           w={"$12"}
@@ -95,7 +98,7 @@ export function Home({ openSheet }: { openSheet: () => void }) {
 
         <VStack flex={1} ml={"$2"}>
           <Text fontSize={"$md"}>Boas vindas, </Text>
-          <Heading fontSize={"$md"}>Felipe</Heading>
+          <Heading fontSize={"$md"}>{user.name}</Heading>
         </VStack>
 
         <Button

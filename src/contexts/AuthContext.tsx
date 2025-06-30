@@ -62,12 +62,27 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     }
   }
 
+  async function fetchUserData() {
+    try {
+      setIsLoadingUserStorageData(true);
+      const { data } = await api.get("/users/me");
+      setUser(data);
+      await storageUserSave(data);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoadingUserStorageData(false);
+    }
+  }
+
   async function loadUserData() {
     try {
       setIsLoadingUserStorageData(true);
       const userLogged = await storageUserGet();
       if (userLogged) {
         setUser(userLogged);
+      } else {
+        await fetchUserData();
       }
     } catch (error) {
       throw error;
