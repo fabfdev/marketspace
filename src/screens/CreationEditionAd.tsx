@@ -136,8 +136,6 @@ export function CreationEditionAd() {
   }: FormDataProps) {
     try {
       setIsLoading(true);
-      console.log(price);
-      return;
       const { data } = await api.post("/products", {
         name,
         description,
