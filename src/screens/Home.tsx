@@ -30,8 +30,8 @@ export function Home({ openSheet }: { openSheet: () => void }) {
 
   const { user } = useAuth();
 
-  function handleOpenDetails() {
-    navigator.navigate("adDetails", { isEdit: false });
+  function handleOpenDetails(productId: string) {
+    navigator.navigate("adDetails", { isEdit: false, productId });
   }
 
   function handleOpenMyAds() {
@@ -90,7 +90,11 @@ export function Home({ openSheet }: { openSheet: () => void }) {
     <VStack flex={1} pt={"$16"} px={"$8"} bgColor="$gray6">
       <HStack>
         <UserPhoto
-          source={user.avatar ? { uri: `${api.defaults.baseURL}/images/${user.avatar}` } : defaultUserPhotoImg}
+          source={
+            user.avatar
+              ? { uri: `${api.defaults.baseURL}/images/${user.avatar}` }
+              : defaultUserPhotoImg
+          }
           alt="Foto do usuário"
           h={"$12"}
           w={"$12"}
@@ -119,7 +123,7 @@ export function Home({ openSheet }: { openSheet: () => void }) {
       <Text mt={"$10"}>Compre produtos variados</Text>
 
       <InputSearch
-        mt={"$4"}
+        my={"$4"}
         handleFilter={openSheet}
         onChangeText={handleInputFilterQuery}
         value={filterQuery}
@@ -127,12 +131,13 @@ export function Home({ openSheet }: { openSheet: () => void }) {
 
       <FlatList
         data={otherUserProducts}
-        //@ts-ignore
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => (item as ProductsDTO).id}
         numColumns={2}
         renderItem={({ item }) => (
-          //@ts-ignore
-          <AdItem item={item} onClick={handleOpenDetails} />
+          <AdItem
+            item={item as ProductsDTO}
+            onClick={() => handleOpenDetails((item as ProductsDTO).id)}
+          />
         )}
         showsVerticalScrollIndicator={false}
         columnWrapperStyle={{ gap: 20 }}

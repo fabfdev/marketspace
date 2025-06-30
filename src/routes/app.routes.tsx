@@ -28,6 +28,7 @@ type AppRoutes = {
   logout: undefined;
   adDetails: {
     isEdit: boolean;
+    productId: string;
   };
   creationEditionAd: undefined;
 };

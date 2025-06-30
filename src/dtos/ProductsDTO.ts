@@ -8,12 +8,17 @@ export type ProductsDTO = {
   is_active: boolean;
   is_new: boolean;
   name: string;
-  payment_methods: string[];
+  payment_methods: PaymentMethos[];
   price: number;
   product_images: ProductImages[];
   updated_at: string;
   user_id: string;
   user: UserDTO;
+};
+
+export type PaymentMethos = {
+  key: string;
+  name: string;
 };
 
 export type ProductImages = {

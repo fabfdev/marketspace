@@ -42,8 +42,8 @@ export function MyAds() {
     title: `Item ${i + 1}`,
   }));
 
-  function handleOpenDetails() {
-    navigator.navigate("adDetails", { isEdit: true });
+  function handleOpenDetails(productId: string) {
+    navigator.navigate("adDetails", { isEdit: true, productId });
   }
 
   async function fetchUserProducts() {
@@ -118,7 +118,7 @@ export function MyAds() {
             <AdItem
               item={item}
               isMine
-              onClick={handleOpenDetails}
+              onClick={() => handleOpenDetails(item.id)}
             />
           )}
           showsVerticalScrollIndicator={false}
