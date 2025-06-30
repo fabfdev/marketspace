@@ -6,9 +6,13 @@ import {
   storageUserRemove,
   storageUserSave,
 } from "@storage/storageUser";
+import {
+  storageAuthTokenGet,
+  storageAuthTokenRemove,
+  storageAuthTokenSave,
+} from "@storage/storageAuthToken";
 
 import { api } from "@services/api";
-import { storageAuthTokenGet, storageAuthTokenRemove, storageAuthTokenSave } from "@storage/storageAuthToken";
 
 export type AuthContextDataProps = {
   user: UserDTO;
@@ -42,7 +46,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       const { data } = await api.post("/sessions", { email, password });
       if (data.user) {
         await storageUserSave(data.user);
-        await storageAuthTokenSave({ token: data.token, refresh_token: data.refresh_token });
+        await storageAuthTokenSave({
+          token: data.token,
+          refresh_token: data.refresh_token,
+        });
         setUserAndToken(data.user, data.token);
       }
     } catch (error) {
@@ -98,6 +105,14 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   useEffect(() => {
     loadUserData();
   }, []);
+
+  useEffect(() => {
+    const subscribe = api.registerInterceptTokenManager(signOut);
+
+    return () => {
+      subscribe();
+    };
+  }, [signOut]);
 
   return (
     <AuthContext.Provider
