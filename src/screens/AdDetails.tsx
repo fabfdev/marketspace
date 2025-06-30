@@ -48,6 +48,7 @@ export function AdDetails() {
   const navigator = useNavigation<AppNavigatorRoutesProps>();
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingDisable, setIsLoadingDisable] = useState(false);
   const [productDetails, setProductDetails] = useState<ProductsDTO>(
     {} as ProductsDTO
   );
@@ -83,6 +84,19 @@ export function AdDetails() {
       console.log(message);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function disableAd() {
+    try {
+      setIsLoadingDisable(true);
+      await api.patch(`/products/${productId}`, { is_active: !productDetails.is_active });
+      navigator.goBack();
+    } catch (error) {
+      setIsLoadingDisable(false);
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
     }
   }
 
@@ -247,6 +261,7 @@ export function AdDetails() {
                 : "Desativar anúncio"
             }
             variant={!productDetails.is_active ? "solid" : "link"}
+            onPress={disableAd}
           />
           <Button title="Excluir anúncio" variant="outline" />
         </VStack>
