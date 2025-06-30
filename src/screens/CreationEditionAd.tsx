@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Heading,
   Pressable,
@@ -15,7 +15,7 @@ import {
   FlatList,
   CheckboxGroup,
 } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { Controller, useForm } from "react-hook-form";
 
@@ -35,6 +35,7 @@ import { ImagesDTO } from "@dtos/ImagesDTO";
 import { useInputFormatter } from "@hooks/useInputFormatter";
 import { AppError } from "@utils/AppError";
 import { api } from "@services/api";
+import { ProductsDTO } from "@dtos/ProductsDTO";
 
 type FormDataProps = {
   name: string;
@@ -45,11 +46,23 @@ type FormDataProps = {
   payment_methods: string[];
 };
 
+type RouteParams = {
+  productId?: string;
+};
+
 export function CreationEditionAd() {
   const { tokens } = gluestackUIConfig;
 
+  const route = useRoute();
+  const params = route.params as RouteParams | undefined;
+  const productId = params?.productId;
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [imagesData, setImagesData] = useState<ImagesDTO[]>([] as ImagesDTO[]);
+  const [displayValue, setDisplayValue] = useState("");
+
   const { goBack } = useNavigation();
-  const { control, handleSubmit } = useForm<FormDataProps>({
+  const { control, handleSubmit, setValue } = useForm<FormDataProps>({
     defaultValues: {
       is_new: true,
       accept_trade: false,
@@ -57,10 +70,6 @@ export function CreationEditionAd() {
     },
   });
   const { formatBRL, parseBRL } = useInputFormatter();
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [imagesData, setImagesData] = useState<ImagesDTO[]>([] as ImagesDTO[]);
-  const [displayValue, setDisplayValue] = useState("");
 
   async function handleImageSelection() {
     try {
@@ -101,7 +110,7 @@ export function CreationEditionAd() {
       await api.post("/products/images", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      
+
       goBack();
     } catch (error) {
       const isAppError = error instanceof AppError;
@@ -127,6 +136,8 @@ export function CreationEditionAd() {
   }: FormDataProps) {
     try {
       setIsLoading(true);
+      console.log(price);
+      return;
       const { data } = await api.post("/products", {
         name,
         description,
@@ -143,6 +154,42 @@ export function CreationEditionAd() {
       console.log(message);
     }
   }
+
+  async function fetchProductDetails() {
+    try {
+      setIsLoading(true);
+      const { data } = await api.get(`/products/${productId}`);
+      const product = data as ProductsDTO;
+      const images: ImagesDTO[] = product.product_images.map((image) => ({
+        fileName: image.path,
+        uri: `${api.defaults.baseURL}/images/${image.path}`,
+        type: image.path.split(".").pop()!
+      }));
+      setImagesData(images);
+      setValue("name", product.name);
+      setValue("description", product.description);
+      setValue("is_new", product.is_new);
+      setDisplayValue(formatBRL(String(product.price)));
+      setValue("price", product.price / 100);
+      setValue("accept_trade", product.accept_trade);
+      setValue(
+        "payment_methods",
+        product.payment_methods.map((item) => item.key)
+      );
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const message = isAppError ? error.message : "Erro";
+      console.log(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (productId) {
+      fetchProductDetails();
+    }
+  }, [productId]);
 
   return (
     <VStack flex={1}>

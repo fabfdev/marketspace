@@ -73,6 +73,10 @@ export function AdDetails() {
     navigator.goBack();
   }
 
+  function handleOpenCreationEditionAd() {
+    navigator.navigate("creationEditionAd", { productId });
+  }
+
   async function fetchProductDetails() {
     try {
       setIsLoading(true);
@@ -112,7 +116,7 @@ export function AdDetails() {
         </Pressable>
 
         {isEdit && (
-          <Pressable>
+          <Pressable onPress={handleOpenCreationEditionAd}>
             <PencilSimpleLine />
           </Pressable>
         )}

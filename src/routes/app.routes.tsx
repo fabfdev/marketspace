@@ -30,7 +30,9 @@ type AppRoutes = {
     isEdit: boolean;
     productId: string;
   };
-  creationEditionAd: undefined;
+  creationEditionAd: {
+    productId: string;
+  } | undefined;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
